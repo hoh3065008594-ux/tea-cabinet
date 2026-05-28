@@ -29,22 +29,34 @@ function initSchema() {
 }
 
 function insertReading(data) {
-  const stmt = db.prepare(`
-    INSERT INTO readings (device, temperature, humidity, rssi, timestamp)
-    VALUES (@device, @temperature, @humidity, @rssi, @timestamp)
-  `);
-  return stmt.run(data);
+  try {
+    const stmt = getDb().prepare(`
+      INSERT INTO readings (device, temperature, humidity, rssi, timestamp)
+      VALUES (@device, @temperature, @humidity, @rssi, @timestamp)
+    `);
+    return stmt.run(data);
+  } catch (e) {
+    throw new Error(`Failed to insert reading: ${e.message}`);
+  }
 }
 
 function getLatest() {
-  return db.prepare('SELECT * FROM readings ORDER BY timestamp DESC LIMIT 1').get();
+  try {
+    return getDb().prepare('SELECT * FROM readings ORDER BY timestamp DESC LIMIT 1').get();
+  } catch (e) {
+    throw new Error(`Failed to get latest reading: ${e.message}`);
+  }
 }
 
 function getHistory(limit = 100, hours = 24) {
-  const since = Math.floor(Date.now() / 1000) - hours * 3600;
-  return db.prepare(
-    'SELECT * FROM readings WHERE timestamp >= ? ORDER BY timestamp DESC LIMIT ?'
-  ).all(since, limit);
+  try {
+    const since = Math.floor(Date.now() / 1000) - hours * 3600;
+    return getDb().prepare(
+      'SELECT * FROM readings WHERE timestamp >= ? ORDER BY timestamp DESC LIMIT ?'
+    ).all(since, limit);
+  } catch (e) {
+    throw new Error(`Failed to get history: ${e.message}`);
+  }
 }
 
 module.exports = { getDb, insertReading, getLatest, getHistory };
