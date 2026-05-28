@@ -1,10 +1,10 @@
 const mqtt = require('mqtt');
 const { insertReading } = require('./db');
 
-const MQTT_BROKER = 'mqtts://v429722e.ala.cn-hangzhou.emqxsl.cn:8883';
+const MQTT_BROKER = process.env.MQTT_BROKER || 'mqtts://localhost:8883';
 const MQTT_OPTIONS = {
-  username: 'z8e10cc3',
-  password: 'VJ9rA_e9ue_0fRyI',
+  username: process.env.MQTT_USERNAME || '',
+  password: process.env.MQTT_PASSWORD || '',
   clientId: 'tea-cabinet-server-' + Math.random().toString(16).slice(2, 8),
 };
 

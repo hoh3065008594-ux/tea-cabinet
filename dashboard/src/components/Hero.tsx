@@ -7,8 +7,8 @@ export default function Hero({ online, device }: Props) {
         <span className={`w-[7px] h-[7px] rounded-full ${online ? 'bg-[#34c759]' : 'bg-[#e0e0e0]'}`} />
         {online ? '设备在线' : '设备离线'} · {device}
       </div>
-      <h1 className="text-[48px] font-semibold tracking-[-0.5px] mb-1">储茶柜</h1>
-      <p className="text-[19px] text-[#7a7a7a]">温湿度实时监测</p>
+      <h1 className="text-[32px] sm:text-[48px] font-semibold tracking-[-0.5px] mb-1">储茶柜</h1>
+      <p className="text-[16px] sm:text-[19px] text-[#7a7a7a]">温湿度实时监测</p>
     </div>
   );
 }

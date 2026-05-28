@@ -48,7 +48,7 @@ export default function App() {
         <div className="bg-white rounded-[18px] p-6 mb-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
           <h3 className="text-[17px] font-medium mb-4">24 小时趋势</h3>
           <HistoryChart data={history} />
-          <CommandRow currentInterval={status.interval} />
+          <CommandRow currentInterval={status.interval} onSuccess={(v) => setStatus(s => ({ ...s, interval: v }))} />
         </div>
       </div>
     </div>

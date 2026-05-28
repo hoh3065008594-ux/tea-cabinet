@@ -22,11 +22,11 @@ float tempHistory[60] = {0};
 float humHistory[60] = {0};
 int historyIdx = 0;
 
-// --- MQTT ---
-const char* mqttBroker = "v429722e.ala.cn-hangzhou.emqxsl.cn";
+// --- MQTT (fill in your EMQX Cloud credentials) ---
+const char* mqttBroker = "YOUR_MQTT_BROKER";
 const int mqttPort = 8883;
-const char* mqttUser = "z8e10cc3";
-const char* mqttPass = "VJ9rA_e9ue_0fRyI";
+const char* mqttUser = "YOUR_MQTT_USERNAME";
+const char* mqttPass = "YOUR_MQTT_PASSWORD";
 const char* deviceId = "tea-cabinet-01";
 
 WiFiClientSecure espClient;
@@ -125,6 +125,9 @@ void setup() {
   }
   Serial.print("[WiFi] Connected: ");
   Serial.println(WiFi.SSID());
+
+  configTime(8 * 3600, 0, "ntp.aliyun.com", "cn.ntp.org.cn");
+  Serial.println("[NTP] Time synced");
 
   Wire.begin(21, 22);
   if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
