@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getLatest, getHistory } = require('../db');
+const { getLatest, getHistory, getDailySummary } = require('../db');
 const { sendCommand, getStatus } = require('../mqtt-client');
 
 router.get('/readings/latest', (req, res) => {
@@ -28,6 +28,16 @@ router.get('/readings', (req, res) => {
     const limit = parseInt(req.query.limit) || 100;
     const hours = parseInt(req.query.hours) || 24;
     const rows = getHistory(limit, hours);
+    res.json({ success: true, data: rows });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+router.get('/readings/daily', (req, res) => {
+  try {
+    const days = parseInt(req.query.days) || 7;
+    const rows = getDailySummary(days);
     res.json({ success: true, data: rows });
   } catch (e) {
     res.status(500).json({ success: false, error: e.message });

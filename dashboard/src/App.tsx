@@ -1,16 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { Reading, DeviceStatus } from './types';
-import { fetchLatest, fetchHistory, fetchStatus } from './api';
+import type { Reading, DailySummary, DeviceStatus } from './types';
+import { fetchLatest, fetchHistory, fetchStatus, fetchDailySummary } from './api';
 import Hero from './components/Hero';
 import StatusCards from './components/StatusCards';
 import MiniChart from './components/MiniChart';
 import InfoBar from './components/InfoBar';
 import HistoryChart from './components/HistoryChart';
+import DailyChart from './components/DailyChart';
 import CommandRow from './components/CommandRow';
 
 export default function App() {
   const [latest, setLatest] = useState<Reading | null>(null);
   const [history, setHistory] = useState<Reading[]>([]);
+  const [daily, setDaily] = useState<DailySummary[]>([]);
   const [range, setRange] = useState<'24h' | '7d'>('24h');
   const [status, setStatus] = useState<DeviceStatus>({
     online: false, lastHeartbeat: null, rssi: null, interval: 30, uptime: 0,
@@ -33,9 +35,11 @@ export default function App() {
   }, [poll]);
 
   useEffect(() => {
-    const hours = range === '7d' ? 168 : 24;
-    const limit = range === '7d' ? 500 : 288;
-    fetchHistory(limit, hours).then(setHistory).catch(() => {});
+    if (range === '7d') {
+      fetchDailySummary(7).then(setDaily).catch(() => {});
+    } else {
+      fetchHistory(288, 24).then(setHistory).catch(() => {});
+    }
   }, [range]);
 
   return (
@@ -56,7 +60,7 @@ export default function App() {
               <button onClick={() => setRange('7d')} className={`text-[12px] px-3 py-1 rounded-md transition-colors ${range === '7d' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#7a7a7a]'}`}>7天</button>
             </div>
           </div>
-          <HistoryChart data={history} />
+          {range === '7d' ? <DailyChart data={daily} /> : <HistoryChart data={history} />}
           <CommandRow currentInterval={status.interval} onSuccess={(v) => setStatus(s => ({ ...s, interval: v }))} />
         </div>
       </div>

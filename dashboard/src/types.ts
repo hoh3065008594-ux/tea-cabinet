@@ -1,3 +1,11 @@
+export interface DailySummary {
+  day: string;
+  temp_max: number;
+  hum_at_max: number;
+  temp_min: number;
+  hum_at_min: number;
+}
+
 export interface Reading {
   temperature: number;
   humidity: number;

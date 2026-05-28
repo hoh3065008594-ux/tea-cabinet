@@ -1,4 +1,4 @@
-import type { Reading, DeviceStatus, ApiResponse } from './types';
+import type { Reading, DailySummary, DeviceStatus, ApiResponse } from './types';
 
 const BASE = '/api';
 
@@ -17,6 +17,10 @@ export async function fetchLatest(): Promise<Reading | null> {
 
 export async function fetchHistory(limit = 100, hours = 24): Promise<Reading[]> {
   return request<Reading[]>(`/readings?limit=${limit}&hours=${hours}`);
+}
+
+export async function fetchDailySummary(days = 7): Promise<DailySummary[]> {
+  return request<DailySummary[]>(`/readings/daily?days=${days}`);
 }
 
 export async function fetchStatus(): Promise<DeviceStatus> {

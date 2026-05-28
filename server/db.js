@@ -59,4 +59,35 @@ function getHistory(limit = 100, hours = 24) {
   }
 }
 
-module.exports = { getDb, insertReading, getLatest, getHistory };
+function getDailySummary(days = 7) {
+  try {
+    const since = Math.floor(Date.now() / 1000) - days * 86400;
+    const rows = getDb().prepare(
+      'SELECT temperature, humidity, timestamp FROM readings WHERE timestamp >= ? ORDER BY timestamp ASC'
+    ).all(since);
+
+    const daysMap = {};
+    for (const row of rows) {
+      const date = new Date(row.timestamp * 1000);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      if (!daysMap[key]) {
+        daysMap[key] = { maxT: row.temperature, maxH: row.humidity, minT: row.temperature, minH: row.humidity };
+      } else {
+        if (row.temperature > daysMap[key].maxT) { daysMap[key].maxT = row.temperature; daysMap[key].maxH = row.humidity; }
+        if (row.temperature < daysMap[key].minT) { daysMap[key].minT = row.temperature; daysMap[key].minH = row.humidity; }
+      }
+    }
+
+    return Object.entries(daysMap).map(([day, v]) => ({
+      day,
+      temp_max: v.maxT,
+      hum_at_max: v.maxH,
+      temp_min: v.minT,
+      hum_at_min: v.minH,
+    }));
+  } catch (e) {
+    throw new Error(`Failed to get daily summary: ${e.message}`);
+  }
+}
+
+module.exports = { getDb, insertReading, getLatest, getHistory, getDailySummary };
