@@ -33,7 +33,11 @@ function connect(onMessage) {
       const data = JSON.parse(payload.toString());
       if (topic === 'tea/readings') {
         console.log('[MQTT] Reading:', data.temperature + '°C', data.humidity + '%');
-        insertReading(data);
+        try {
+          insertReading(data);
+        } catch (e) {
+          console.error('[MQTT] DB insert error:', e.message);
+        }
       } else if (topic === 'tea/status') {
         deviceStatus = {
           online: data.online,
@@ -66,7 +70,7 @@ function sendCommand(cmd, value) {
 }
 
 function getStatus() {
-  return deviceStatus;
+  return { ...deviceStatus };
 }
 
 module.exports = { connect, sendCommand, getStatus };
