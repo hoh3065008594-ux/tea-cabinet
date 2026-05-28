@@ -11,6 +11,7 @@ import CommandRow from './components/CommandRow';
 export default function App() {
   const [latest, setLatest] = useState<Reading | null>(null);
   const [history, setHistory] = useState<Reading[]>([]);
+  const [range, setRange] = useState<'24h' | '7d'>('24h');
   const [status, setStatus] = useState<DeviceStatus>({
     online: false, lastHeartbeat: null, rssi: null, interval: 30, uptime: 0,
   });
@@ -32,8 +33,10 @@ export default function App() {
   }, [poll]);
 
   useEffect(() => {
-    fetchHistory(500, 168).then(setHistory).catch(() => {});
-  }, []);
+    const hours = range === '7d' ? 168 : 24;
+    const limit = range === '7d' ? 500 : 288;
+    fetchHistory(limit, hours).then(setHistory).catch(() => {});
+  }, [range]);
 
   return (
     <div className="min-h-screen">
@@ -46,7 +49,13 @@ export default function App() {
         </div>
         <InfoBar status={status} />
         <div className="bg-white rounded-[18px] p-6 mb-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-          <h3 className="text-[17px] font-medium mb-4">7 天趋势</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[17px] font-medium">{range === '7d' ? '7 天趋势' : '24 小时趋势'}</h3>
+            <div className="flex bg-[#f0f0f0] rounded-lg p-0.5 gap-0.5">
+              <button onClick={() => setRange('24h')} className={`text-[12px] px-3 py-1 rounded-md transition-colors ${range === '24h' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#7a7a7a]'}`}>24小时</button>
+              <button onClick={() => setRange('7d')} className={`text-[12px] px-3 py-1 rounded-md transition-colors ${range === '7d' ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#7a7a7a]'}`}>7天</button>
+            </div>
+          </div>
           <HistoryChart data={history} />
           <CommandRow currentInterval={status.interval} onSuccess={(v) => setStatus(s => ({ ...s, interval: v }))} />
         </div>
