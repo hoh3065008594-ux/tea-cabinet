@@ -32,7 +32,7 @@ export default function App() {
   }, [poll]);
 
   useEffect(() => {
-    fetchHistory(288, 24).then(setHistory).catch(() => {});
+    fetchHistory(500, 168).then(setHistory).catch(() => {});
   }, []);
 
   return (
@@ -46,7 +46,7 @@ export default function App() {
         </div>
         <InfoBar status={status} />
         <div className="bg-white rounded-[18px] p-6 mb-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-          <h3 className="text-[17px] font-medium mb-4">24 小时趋势</h3>
+          <h3 className="text-[17px] font-medium mb-4">7 天趋势</h3>
           <HistoryChart data={history} />
           <CommandRow currentInterval={status.interval} onSuccess={(v) => setStatus(s => ({ ...s, interval: v }))} />
         </div>
