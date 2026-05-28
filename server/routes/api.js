@@ -39,11 +39,16 @@ router.get('/status', (req, res) => {
   res.json({ success: true, data: status });
 });
 
+const ALLOWED_COMMANDS = ['set_interval'];
+
 router.post('/command', (req, res) => {
   try {
     const { cmd, value } = req.body;
     if (!cmd || value === undefined) {
       return res.status(400).json({ success: false, error: 'Missing cmd or value' });
+    }
+    if (!ALLOWED_COMMANDS.includes(cmd)) {
+      return res.status(403).json({ success: false, error: 'Command not permitted' });
     }
     const result = sendCommand(cmd, value);
     res.json({ success: true, data: result });
