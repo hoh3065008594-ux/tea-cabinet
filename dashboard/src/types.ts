@@ -15,6 +15,6 @@ export interface DeviceStatus {
 
 export interface ApiResponse<T> {
   success: boolean;
-  data: T;
+  data?: T;
   error?: string;
 }

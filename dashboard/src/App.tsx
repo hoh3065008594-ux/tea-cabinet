@@ -16,9 +16,13 @@ export default function App() {
   });
 
   const poll = useCallback(async () => {
-    const [r, s] = await Promise.all([fetchLatest(), fetchStatus()]);
-    if (r) setLatest(r);
-    setStatus(s);
+    try {
+      const [r, s] = await Promise.all([fetchLatest(), fetchStatus()]);
+      if (r) setLatest(r);
+      setStatus(s);
+    } catch {
+      // API unavailable, keep last known state
+    }
   }, []);
 
   useEffect(() => {
@@ -28,7 +32,7 @@ export default function App() {
   }, [poll]);
 
   useEffect(() => {
-    fetchHistory(288, 24).then(setHistory);
+    fetchHistory(288, 24).then(setHistory).catch(() => {});
   }, []);
 
   return (
