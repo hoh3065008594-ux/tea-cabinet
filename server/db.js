@@ -36,7 +36,8 @@ function insertReading(data) {
     `);
     return stmt.run(data);
   } catch (e) {
-    throw new Error(`Failed to insert reading: ${e.message}`);
+    console.error('DB insert error:', e);
+    throw new Error('Failed to insert reading');
   }
 }
 
@@ -44,7 +45,8 @@ function getLatest() {
   try {
     return getDb().prepare('SELECT * FROM readings ORDER BY timestamp DESC LIMIT 1').get();
   } catch (e) {
-    throw new Error(`Failed to get latest reading: ${e.message}`);
+    console.error('DB getLatest error:', e);
+    throw new Error('Failed to get latest reading');
   }
 }
 
@@ -55,7 +57,8 @@ function getHistory(limit = 100, hours = 24) {
       'SELECT * FROM readings WHERE timestamp >= ? ORDER BY timestamp DESC LIMIT ?'
     ).all(since, limit);
   } catch (e) {
-    throw new Error(`Failed to get history: ${e.message}`);
+    console.error('DB getHistory error:', e);
+    throw new Error('Failed to get history');
   }
 }
 
@@ -86,7 +89,8 @@ function getDailySummary(days = 7) {
       hum_at_min: v.minH,
     }));
   } catch (e) {
-    throw new Error(`Failed to get daily summary: ${e.message}`);
+    console.error('DB getDailySummary error:', e);
+    throw new Error('Failed to get daily summary');
   }
 }
 

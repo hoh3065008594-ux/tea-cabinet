@@ -19,7 +19,8 @@ router.get('/readings/latest', (req, res) => {
       },
     });
   } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+    console.error('API error:', e);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
@@ -30,7 +31,8 @@ router.get('/readings', (req, res) => {
     const rows = getHistory(limit, hours);
     res.json({ success: true, data: rows });
   } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+    console.error('API error:', e);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
@@ -40,7 +42,8 @@ router.get('/readings/daily', (req, res) => {
     const rows = getDailySummary(days);
     res.json({ success: true, data: rows });
   } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+    console.error('API error:', e);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
@@ -63,7 +66,8 @@ router.post('/command', (req, res) => {
     const result = sendCommand(cmd, value);
     res.json({ success: true, data: result });
   } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+    console.error('API error:', e);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
