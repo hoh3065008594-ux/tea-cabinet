@@ -1,122 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState, useCallback } from 'react';
+import type { Reading, DeviceStatus } from './types';
+import { fetchLatest, fetchHistory, fetchStatus } from './api';
+import Hero from './components/Hero';
+import StatusCards from './components/StatusCards';
+import MiniChart from './components/MiniChart';
+import InfoBar from './components/InfoBar';
+import HistoryChart from './components/HistoryChart';
+import CommandRow from './components/CommandRow';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [latest, setLatest] = useState<Reading | null>(null);
+  const [history, setHistory] = useState<Reading[]>([]);
+  const [status, setStatus] = useState<DeviceStatus>({
+    online: false, lastHeartbeat: null, rssi: null, interval: 30, uptime: 0,
+  });
+
+  const poll = useCallback(async () => {
+    const [r, s] = await Promise.all([fetchLatest(), fetchStatus()]);
+    if (r) setLatest(r);
+    setStatus(s);
+  }, []);
+
+  useEffect(() => {
+    poll();
+    const timer = setInterval(poll, 5000);
+    return () => clearInterval(timer);
+  }, [poll]);
+
+  useEffect(() => {
+    fetchHistory(288, 24).then(setHistory);
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="min-h-screen">
+      <Hero online={status.online} device="tea-cabinet-01" />
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 -mt-5 relative z-10">
+        <StatusCards latest={latest} />
+        <div className="bg-white rounded-[18px] p-6 mb-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+          <p className="text-[13px] text-[#7a7a7a] font-medium mb-3">实时趋势</p>
+          <MiniChart data={history.slice(0, 20)} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+        <InfoBar status={status} />
+        <div className="bg-white rounded-[18px] p-6 mb-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+          <h3 className="text-[17px] font-medium mb-4">24 小时趋势</h3>
+          <HistoryChart data={history} />
+          <CommandRow currentInterval={status.interval} />
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </div>
+    </div>
+  );
 }
-
-export default App
