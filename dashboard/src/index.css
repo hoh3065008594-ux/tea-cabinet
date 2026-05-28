@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #0066cc;
+  --color-primary-hover: #0071e3;
+  --color-ink: #1d1d1f;
+  --color-ink-muted: #7a7a7a;
+  --color-canvas: #ffffff;
+  --color-canvas-parchment: #f5f5f7;
+  --color-hairline: #e0e0e0;
+  --color-divider: #f0f0f0;
+  --color-success: #34c759;
+}
+
+body {
+  font-family: "SF Pro Display", "SF Pro Text", system-ui, -apple-system, sans-serif;
+  background: var(--color-canvas-parchment);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
